@@ -7,16 +7,20 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// 🔥 BURAYA KENDİ MONGODB LİNKİNİ YAZ
-mongoose.connect("mongodb+srv://vezirhanatsiz_db_user:ZwQgM2jJHBawzFW3@cluster0.2hmww1f.mongodb.net/?appName=Cluster0")
-  .then(() => console.log("MongoDB bağlandı"))
-  .catch(err => console.log(err));
+// 🔥 MongoDB bağlantı
+mongoose.connect("mongodb+srv://vezirhanatsiz_db_user:ZwQgM2jJHBawzFW3@cluster0.2hmww1f.mongodb.net/test", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+.then(() => console.log("MongoDB bağlandı"))
+.catch(err => console.log("MongoDB hata:", err));
 
-// Model
+// 🔥 Schema (veri yapısı)
 const DataSchema = new mongoose.Schema({
-  name: String,
-  code: String
+    name: String,
+    code: String
 });
+
 const Data = mongoose.model("Data", DataSchema);
 
 // Middleware
@@ -26,52 +30,53 @@ app.use(express.static(__dirname));
 
 // Ana sayfa
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // Dashboard
 app.get('/dashboard', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dashboard.html'));
+    res.sendFile(path.join(__dirname, 'dashboard.html'));
 });
 
-// Tüm veriler
+// 📦 Tüm verileri getir
 app.get('/api/data', async (req, res) => {
-  const data = await Data.find();
-  res.json(data);
+    const data = await Data.find();
+    res.json(data);
 });
 
-// Kayıt ekle
+// ➕ Yeni kayıt ekle
 app.post('/api/add', async (req, res) => {
-  const { name, code } = req.body;
+    const { name, code } = req.body;
 
-  if (!name || !code) {
-    return res.status(400).json({ error: 'İsim ve kod gerekli' });
-  }
+    if (!name || !code) {
+        return res.status(400).json({ error: 'İsim ve kod gerekli' });
+    }
 
-  await Data.create({ name, code });
-  res.json({ message: 'Kayıt eklendi' });
+    await Data.create({ name, code });
+
+    res.json({ message: 'Kayıt eklendi' });
 });
 
-// Arama (büyük/küçük fark etmez)
+// 🔍 Arama (büyük/küçük fark etmez)
 app.post('/api/search', async (req, res) => {
-  const { name } = req.body;
+    const { name } = req.body;
 
-  if (!name) {
-    return res.status(400).json({ error: 'İsim gerekli' });
-  }
+    if (!name) {
+        return res.status(400).json({ error: 'İsim gerekli' });
+    }
 
-  const found = await Data.findOne({
-    name: new RegExp("^" + name + "$", "i")
-  });
+    const found = await Data.findOne({
+        name: new RegExp("^" + name + "$", "i")
+    });
 
-  if (found) {
-    res.json({ code: found.code });
-  } else {
-    res.json({ error: 'Kod bulunamadı' });
-  }
+    if (found) {
+        res.json({ code: found.code });
+    } else {
+        res.json({ error: 'Kod bulunamadı' });
+    }
 });
 
-// SERVER
+// 🚀 Server başlat
 app.listen(PORT, () => {
-  console.log("Server çalışıyor: " + PORT);
+    console.log("Server çalışıyor: " + PORT);
 });
