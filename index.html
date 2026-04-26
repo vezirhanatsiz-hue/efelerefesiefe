@@ -1,21 +1,143 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giriş Yap</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Veri Sistemi</title>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #1e1e2f, #2c2c54);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+.container {
+    background: #2f2f46;
+    padding: 30px;
+    border-radius: 15px;
+    width: 350px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    background: #444;
+    color: white;
+}
+
+input::placeholder {
+    color: #aaa;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 8px;
+    background: #00c896;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #00a37a;
+}
+
+.section {
+    margin-top: 20px;
+}
+
+.result {
+    margin-top: 10px;
+    padding: 10px;
+    background: #444;
+    border-radius: 8px;
+}
+</style>
 </head>
+
 <body>
-    <div class="container">
-        <h1>Giriş Yap</h1>
-        <form id="loginForm">
-            <input type="text" id="username" placeholder="Kullanıcı Adı" required>
-            <input type="password" id="password" placeholder="Şifre" required>
-            <button type="submit">Giriş</button>
-        </form>
-        <p id="error"></p>
+
+<div class="container">
+    <h1>Veri Sistemi</h1>
+
+    <!-- EKLE -->
+    <div class="section">
+        <input type="text" id="name" placeholder="İsim">
+        <input type="text" id="code" placeholder="Kod">
+        <button onclick="addData()">Ekle</button>
     </div>
-    <script src="script.js"></script>
+
+    <!-- ARAMA -->
+    <div class="section">
+        <input type="text" id="searchName" placeholder="İsim ara">
+        <button onclick="searchData()">Ara</button>
+        <div id="result" class="result"></div>
+    </div>
+</div>
+
+<script>
+async function addData() {
+    const name = document.getElementById("name").value;
+    const code = document.getElementById("code").value;
+
+    const res = await fetch("/api/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, code })
+    });
+
+    const data = await res.json();
+    alert(data.message || data.error);
+}
+
+async function searchData() {
+    const name = document.getElementById("searchName").value;
+
+    const res = await fetch("/api/search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name })
+    });
+
+    const data = await res.json();
+
+    const resultDiv = document.getElementById("result");
+
+    if (data.code) {
+        resultDiv.innerHTML = "Kod: " + data.code;
+    } else {
+        resultDiv.innerHTML = data.error;
+    }
+}
+</script>
+
 </body>
 </html>
