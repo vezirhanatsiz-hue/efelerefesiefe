@@ -5,146 +5,92 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Veri Sistemi</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
-}
-
 body {
     background: linear-gradient(135deg, #1f1f2e, #2d2d50);
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
+    font-family: Arial;
     color: white;
 }
 
-.container {
+.box {
     background: #2f2f46;
     padding: 30px;
     border-radius: 15px;
-    width: 350px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    width: 300px;
     text-align: center;
-}
-
-h1 {
-    margin-bottom: 20px;
 }
 
 input {
     width: 100%;
-    padding: 12px;
+    padding: 10px;
     margin: 10px 0;
-    border-radius: 8px;
     border: none;
-    outline: none;
-    background: #444;
-    color: white;
-}
-
-input::placeholder {
-    color: #aaa;
+    border-radius: 8px;
 }
 
 button {
     width: 100%;
-    padding: 12px;
-    margin-top: 10px;
+    padding: 10px;
+    background: #00c896;
     border: none;
     border-radius: 8px;
-    background: #00c896;
     color: white;
-    font-weight: bold;
     cursor: pointer;
-    transition: 0.3s;
-}
-
-button:hover {
-    background: #00a37a;
-}
-
-.section {
-    margin-top: 20px;
 }
 
 .result {
     margin-top: 10px;
-    padding: 10px;
-    background: #444;
-    border-radius: 8px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-    <h1>Veri Sistemi</h1>
+<div class="box">
+    <h2>VERİ SİSTEMİ</h2>
 
-    <!-- EKLE -->
-    <div class="section">
-        <input type="text" id="name" placeholder="İsim">
-        <input type="text" id="code" placeholder="Kod">
-        <button onclick="addData()">Ekle</button>
-    </div>
+    <input id="name" placeholder="İsim">
+    <input id="code" placeholder="Kod">
+    <button onclick="add()">Ekle</button>
 
-    <!-- ARAMA -->
-    <div class="section">
-        <input type="text" id="searchName" placeholder="İsim ara">
-        <button onclick="searchData()">Ara</button>
-        <div id="result" class="result"></div>
-    </div>
+    <input id="search" placeholder="Ara">
+    <button onclick="search()">Ara</button>
+
+    <div id="result" class="result"></div>
 </div>
 
 <script>
-async function addData() {
+async function add() {
     const name = document.getElementById("name").value;
     const code = document.getElementById("code").value;
 
-    try {
-        const res = await fetch("/api/add", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name, code })
-        });
+    const res = await fetch("/api/add", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ name, code })
+    });
 
-        const data = await res.json();
-        alert(data.message || data.error);
-
-    } catch (err) {
-        alert("Sunucu hatası");
-    }
+    const data = await res.json();
+    alert(data.message || data.error);
 }
 
-async function searchData() {
-    const name = document.getElementById("searchName").value;
+async function search() {
+    const name = document.getElementById("search").value;
 
-    try {
-        const res = await fetch("/api/search", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name })
-        });
+    const res = await fetch("/api/search", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ name })
+    });
 
-        const data = await res.json();
+    const data = await res.json();
 
-        const resultDiv = document.getElementById("result");
-
-        if (data.code) {
-            resultDiv.innerHTML = "Kod: " + data.code;
-        } else {
-            resultDiv.innerHTML = data.error;
-        }
-
-    } catch (err) {
-        document.getElementById("result").innerHTML = "Hata oluştu";
-    }
+    document.getElementById("result").innerText =
+        data.code ? "Kod: " + data.code : data.error;
 }
 </script>
 
