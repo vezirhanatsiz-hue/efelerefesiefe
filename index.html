@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Veri Sistemi</title>
 
-<!-- Google Font -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
@@ -17,7 +16,7 @@
 }
 
 body {
-    background: linear-gradient(135deg, #1e1e2f, #2c2c54);
+    background: linear-gradient(135deg, #1f1f2e, #2d2d50);
     height: 100vh;
     display: flex;
     justify-content: center;
@@ -108,33 +107,43 @@ async function addData() {
     const name = document.getElementById("name").value;
     const code = document.getElementById("code").value;
 
-    const res = await fetch("/api/add", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, code })
-    });
+    try {
+        const res = await fetch("/api/add", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, code })
+        });
 
-    const data = await res.json();
-    alert(data.message || data.error);
+        const data = await res.json();
+        alert(data.message || data.error);
+
+    } catch (err) {
+        alert("Sunucu hatası");
+    }
 }
 
 async function searchData() {
     const name = document.getElementById("searchName").value;
 
-    const res = await fetch("/api/search", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name })
-    });
+    try {
+        const res = await fetch("/api/search", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name })
+        });
 
-    const data = await res.json();
+        const data = await res.json();
 
-    const resultDiv = document.getElementById("result");
+        const resultDiv = document.getElementById("result");
 
-    if (data.code) {
-        resultDiv.innerHTML = "Kod: " + data.code;
-    } else {
-        resultDiv.innerHTML = data.error;
+        if (data.code) {
+            resultDiv.innerHTML = "Kod: " + data.code;
+        } else {
+            resultDiv.innerHTML = data.error;
+        }
+
+    } catch (err) {
+        document.getElementById("result").innerHTML = "Hata oluştu";
     }
 }
 </script>
