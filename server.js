@@ -1,52 +1,42 @@
-const express = require('express');
-const cors = require('cors');
-const mongoose = require('mongoose');
-const path = require('path');
+const express = require("express");
+const mongoose = require("mongoose");
+const path = require("path");
 
 const app = express();
-const PORT = process.env.PORT || 10000;
-
-// 🔥 MongoDB
-const MONGO_URI = "mongodb+srv://vezirhanatsiz_db_user:GFOyjqLi2cU2LDjV@cluster0.2hmww1f.mongodb.net/?retryWrites=true&w=majority";
-
-mongoose.connect(MONGO_URI)
-.then(() => console.log("✅ MongoDB bağlandı"))
-.catch(err => console.log("❌ MongoDB hata:", err));
 
 // Middleware
-app.use(cors());
 app.use(express.json());
 
-// 🔥 STATIC (DÜZELTİLDİ)
+// 🔥 STATIC DOSYALARI SERVE ET (ÖNEMLİ)
 app.use(express.static(path.join(__dirname)));
 
-// 🔥 ANA SAYFA (GARANTİ)
+// 🔥 ANA SAYFA
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "index.html"));
 });
 
-// 🔥 Schema
-const DataSchema = new mongoose.Schema({
+// MongoDB bağlantı
+mongoose.connect(process.env.MONGO_URI)
+.then(() => console.log("✅ MongoDB bağlandı"))
+.catch(err => console.log("❌ MongoDB hata:", err));
+
+// Model
+const Data = mongoose.model("Data", {
     name: String,
     code: String
 });
-
-const Data = mongoose.model("Data", DataSchema);
 
 // API - EKLE
 app.post("/api/add", async (req, res) => {
     try {
         const { name, code } = req.body;
 
-        if (!name || !code) {
-            return res.json({ error: "Eksik veri" });
-        }
+        const newData = new Data({ name, code });
+        await newData.save();
 
-        await Data.create({ name, code });
-
-        res.json({ message: "Kayıt eklendi" });
+        res.json({ message: "Kayıt başarılı" });
     } catch (err) {
-        res.json({ error: "Sunucu hatası" });
+        res.status(500).json({ error: "Kayıt hatası" });
     }
 });
 
@@ -55,19 +45,20 @@ app.post("/api/search", async (req, res) => {
     try {
         const { name } = req.body;
 
-        const found = await Data.findOne({ name });
+        const data = await Data.findOne({ name });
 
-        if (found) {
-            res.json({ code: found.code });
+        if (data) {
+            res.json({ code: data.code });
         } else {
             res.json({ error: "Bulunamadı" });
         }
     } catch (err) {
-        res.json({ error: "Hata" });
+        res.status(500).json({ error: "Arama hatası" });
     }
 });
 
-// SERVER
+// PORT
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
     console.log("🚀 Server çalışıyor:", PORT);
 });
