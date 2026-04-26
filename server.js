@@ -5,13 +5,13 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const DATA_FILE = path.join(__dirname, 'data.json');
 
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static('.')); // Static files serve et
+app.use(express.static(__dirname)); // static dosyalar
 
 // Verileri oku
 function readData() {
@@ -65,10 +65,11 @@ app.post('/api/search', (req, res) => {
     if (found) {
         res.json({ code: found.code });
     } else {
-        res.json({ error: 'Kod bulunmadı' });
+        res.json({ error: 'Kod bulunamadı' });
     }
 });
 
+// SERVER BAŞLAT
 app.listen(PORT, () => {
-    console.log(`Server çalışıyor: http://localhost:${PORT}`);
+    console.log("Server çalışıyor: " + PORT);
 });
