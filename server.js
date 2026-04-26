@@ -1,32 +1,29 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
 const path = require('path');
+const mongoose = require('mongoose');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-// 🔥 MongoDB bağlantı
-mongoose.connect("mongodb+srv://vezirhanatsiz_db_user:ZwQgM2jJHBawzFW3@cluster0.2hmww1f.mongodb.net/test", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-.then(() => console.log("MongoDB bağlandı"))
-.catch(err => console.log("MongoDB hata:", err));
-
-// 🔥 Schema (veri yapısı)
-const DataSchema = new mongoose.Schema({
-    name: String,
-    code: String
-});
-
-const Data = mongoose.model("Data", DataSchema);
 
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(__dirname));
+
+// 🔥 MongoDB Bağlantı
+mongoose.connect(process.env.MONGO_URI)
+.then(() => console.log("✅ MongoDB bağlandı"))
+.catch(err => console.log("❌ MongoDB hata:", err));
+
+// 📦 Schema
+const DataSchema = new mongoose.Schema({
+    name: String,
+    code: String
+});
+
+const Data = mongoose.model('Data', DataSchema);
 
 // Ana sayfa
 app.get('/', (req, res) => {
@@ -38,13 +35,13 @@ app.get('/dashboard', (req, res) => {
     res.sendFile(path.join(__dirname, 'dashboard.html'));
 });
 
-// 📦 Tüm verileri getir
+// Tüm verileri getir
 app.get('/api/data', async (req, res) => {
     const data = await Data.find();
     res.json(data);
 });
 
-// ➕ Yeni kayıt ekle
+// Yeni kayıt ekle
 app.post('/api/add', async (req, res) => {
     const { name, code } = req.body;
 
@@ -57,7 +54,7 @@ app.post('/api/add', async (req, res) => {
     res.json({ message: 'Kayıt eklendi' });
 });
 
-// 🔍 Arama (büyük/küçük fark etmez)
+// Arama
 app.post('/api/search', async (req, res) => {
     const { name } = req.body;
 
@@ -65,9 +62,7 @@ app.post('/api/search', async (req, res) => {
         return res.status(400).json({ error: 'İsim gerekli' });
     }
 
-    const found = await Data.findOne({
-        name: new RegExp("^" + name + "$", "i")
-    });
+    const found = await Data.findOne({ name });
 
     if (found) {
         res.json({ code: found.code });
@@ -76,7 +71,7 @@ app.post('/api/search', async (req, res) => {
     }
 });
 
-// 🚀 Server başlat
+// Server başlat
 app.listen(PORT, () => {
-    console.log("Server çalışıyor: " + PORT);
+    console.log("🚀 Server çalışıyor: " + PORT);
 });
