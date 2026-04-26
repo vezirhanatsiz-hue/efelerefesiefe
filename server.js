@@ -17,8 +17,13 @@ mongoose.connect(MONGO_URI)
 app.use(cors());
 app.use(express.json());
 
-// 🔥 STATIC (EN KRİTİK)
-app.use(express.static(__dirname));
+// 🔥 STATIC (DÜZELTİLDİ)
+app.use(express.static(path.join(__dirname)));
+
+// 🔥 ANA SAYFA (GARANTİ)
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "index.html"));
+});
 
 // 🔥 Schema
 const DataSchema = new mongoose.Schema({
@@ -28,12 +33,7 @@ const DataSchema = new mongoose.Schema({
 
 const Data = mongoose.model("Data", DataSchema);
 
-// ANA SAYFA (GARANTİ)
-app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "index.html"));
-});
-
-// API
+// API - EKLE
 app.post("/api/add", async (req, res) => {
     try {
         const { name, code } = req.body;
@@ -50,6 +50,7 @@ app.post("/api/add", async (req, res) => {
     }
 });
 
+// API - ARA
 app.post("/api/search", async (req, res) => {
     try {
         const { name } = req.body;
