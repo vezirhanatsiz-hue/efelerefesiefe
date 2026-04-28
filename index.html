@@ -1,101 +1,120 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="tr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Veri Sistemi</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FASHION KRIPTO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="ambient" aria-hidden="true">
+      <span class="mesh mesh-a"></span>
+      <span class="mesh mesh-b"></span>
+      <span class="mesh mesh-c"></span>
+      <span class="grid"></span>
+    </div>
 
-<style>
-body {
-    background: linear-gradient(135deg, #1f1f2e, #2d2d50);
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: Arial;
-    color: white;
-    flex-direction: column;
-}
+    <main class="shell">
+      <section id="loginView" class="auth-view">
+        <div class="brand-lockup">
+          <div class="brand-mark">F</div>
+          <div>
+            <p class="eyebrow">Fashion Kripto</p>
+            <h1>FASHION KRIPTO</h1>
+          </div>
+        </div>
 
-.box {
-    background: #2f2f46;
-    padding: 30px;
-    border-radius: 15px;
-    width: 300px;
-    text-align: center;
-}
+        <form id="loginForm" class="auth-panel">
+          <div class="panel-heading">
+            <p class="eyebrow">Güvenli erişim</p>
+            <h2>Hesabına giriş yap</h2>
+          </div>
 
-input {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: none;
-    border-radius: 8px;
-}
+          <label>
+            <span>Kullanıcı adı</span>
+            <input id="loginUsername" type="text" autocomplete="username" required />
+          </label>
 
-button {
-    width: 100%;
-    padding: 10px;
-    background: #00c896;
-    border: none;
-    border-radius: 8px;
-    color: white;
-    cursor: pointer;
-}
+          <label>
+            <span>Şifre</span>
+            <input id="loginPassword" type="password" autocomplete="current-password" required />
+          </label>
 
-.result {
-    margin-top: 10px;
-}
-</style>
-</head>
+          <p id="loginError" class="form-error" role="alert"></p>
 
-<body>
+          <button class="primary-button" type="submit">
+            <span>Giriş Yap</span>
+            <i aria-hidden="true"></i>
+          </button>
+        </form>
+      </section>
 
-<h1 style="color:red;">YENİ TASARIM AKTİF</h1>
+      <section id="introView" class="intro-view" hidden>
+        <div class="intro-logo no-image">
+          <div class="fallback-logo">F</div>
+        </div>
+      </section>
 
-<div class="box">
-    <h2>VERİ SİSTEMİ</h2>
+      <section id="appView" class="app-view" hidden>
+        <header class="app-header">
+          <div class="brand-lockup compact">
+            <div class="brand-mark">F</div>
+            <div>
+              <p class="eyebrow">Fashion Kayıt</p>
+              <h1>Cüzdan Yönetimi</h1>
+            </div>
+          </div>
+          <button id="logoutButton" class="ghost-button" type="button">Çıkış</button>
+        </header>
 
-    <input id="name" placeholder="İsim">
-    <input id="code" placeholder="Kod">
-    <button onclick="add()">Ekle</button>
+        <div class="workspace">
+          <form id="saveForm" class="tool-panel">
+            <div class="panel-heading">
+              <p class="eyebrow">Yeni kayıt</p>
+              <h2>Kullanıcıya cüzdan ekle</h2>
+            </div>
 
-    <input id="search" placeholder="Ara">
-    <button onclick="search()">Ara</button>
+            <div class="field-grid">
+              <label>
+                <span>Kullanıcı adı</span>
+                <input id="ownerInput" type="text" placeholder="xxx" autocomplete="off" required />
+              </label>
+              <label>
+                <span>Cüzdan adresi</span>
+                <input id="walletInput" type="text" placeholder="xxxz" autocomplete="off" required />
+              </label>
+            </div>
 
-    <div id="result" class="result"></div>
-</div>
+            <p id="saveError" class="form-error" role="alert"></p>
+            <button class="primary-button wide" type="submit">
+              <span>Kaydet</span>
+              <i aria-hidden="true"></i>
+            </button>
+          </form>
 
-<script>
-async function add() {
-    const name = document.getElementById("name").value;
-    const code = document.getElementById("code").value;
+          <section class="tool-panel search-panel">
+            <div class="panel-heading">
+              <p class="eyebrow">Arama</p>
+              <h2>Kayıtlı cüzdanları bul</h2>
+            </div>
 
-    const res = await fetch("/api/add", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ name, code })
-    });
+            <label>
+              <span>Kullanıcı adı ara</span>
+              <input id="searchInput" type="search" placeholder="Kullanıcı adı yaz" autocomplete="off" />
+            </label>
 
-    const data = await res.json();
-    alert(data.message || data.error);
-}
+            <div id="resultBox" class="result-box">
+              <p class="muted">Arama yapmak için kullanıcı adı gir.</p>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
 
-async function search() {
-    const name = document.getElementById("search").value;
-
-    const res = await fetch("/api/search", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ name })
-    });
-
-    const data = await res.json();
-
-    document.getElementById("result").innerText =
-        data.code ? "Kod: " + data.code : data.error;
-}
-</script>
-
-</body>
+    <div id="toast" class="toast" role="status" aria-live="polite">Kaydedildi</div>
+    <script src="script.js"></script>
+  </body>
 </html>
